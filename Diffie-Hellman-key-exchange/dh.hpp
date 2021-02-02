@@ -1,4 +1,4 @@
- 
+
 #include <cstdio>
 #include <chrono>
 #include <iostream>
@@ -25,7 +25,7 @@ class mxws_128
 
 private:
 
-	std::random_device r; 
+	std::random_device r;
 
 public:
 
@@ -132,7 +132,7 @@ public:
 			std::vector<uint32_t> seeds(seq.size());
 			seq.param(seeds.begin());
 			for (size_t x = 0; x < 256; x += 32)
-				w |= (uint256_t(seeds[x/32]) << x);
+				w |= (uint256_t(seeds[x / 32]) << x);
 			x = 1;
 		}
 
@@ -370,27 +370,27 @@ public:
 
 inline uint64_t rand_uint64()
 {
-  static thread_local mxws_64 mxws_64;
-  return mxws_64();
+	static thread_local mxws_64 mxws_64;
+	return mxws_64();
 }
 
 inline uint256_t rand_ui128()
 {
-  static thread_local mxws_64 mxws_64;
+	static thread_local mxws_64 mxws_64;
 
 	uint256_t a = mxws_64();
 	uint256_t b = mxws_64();
-  return (a << 64) | b;
+	return (a << 64) | b;
 }
 
 //////////////////////////////////////////
 
 inline uint256_t rand_ui256_prime()
 {
-  static thread_local mxws_256 mxws_256;
+	static thread_local mxws_256 mxws_256;
 	uint256_t n;
 	while (!miller_rabin_test(n, 1, mxws_256))n = mxws_256();
-  return n;
+	return n;
 }
 
 inline uint256_t rand_ui256()
@@ -439,7 +439,7 @@ inline uint512_t Primitive_Root
 	mxws_512 mxws_512;
 
 	while (!((gcd(r, p) == 1) && isPrime(r)))r = mxws_512();
-	
+
 	return r;
 }
 
@@ -450,19 +450,19 @@ inline void dh_gen_keypair
 (
 	uint512_t& private_key,
 	uint512_t& public_key
-) 
+)
 {
-  private_key = rand_ui512();
-  public_key = powm(G, private_key, P);
+	private_key = rand_ui512();
+	public_key = powm(G, private_key, P);
 }
 
 inline uint512_t dh_gen_secret
 (
-  const uint512_t my_private_key,
-  const uint512_t another_public_key
-) 
+	const uint512_t my_private_key,
+	const uint512_t another_public_key
+)
 {
-  return powm(another_public_key, my_private_key, P);
+	return powm(another_public_key, my_private_key, P);
 }
 
 /*
@@ -577,7 +577,7 @@ public:
 	}
 
 	// a + int
-		inline friend FiniteFieldElement operator+(const FiniteFieldElement& lhs, T i)
+	inline friend FiniteFieldElement operator+(const FiniteFieldElement& lhs, T i)
 	{
 		return FiniteFieldElement(lhs.i_ + i);
 	}
@@ -638,7 +638,7 @@ public:
 
 		ffe_t  x_;
 		ffe_t  y_;
-		EllipticCurve *ec_;
+		EllipticCurve* ec_;
 
 		Point() = default;
 		virtual ~Point() = default;
@@ -686,7 +686,7 @@ public:
 		}
 
 		// adding two points on the curve
-		void add(ffe_t x1, ffe_t y1, ffe_t x2, ffe_t y2, ffe_t& xR, ffe_t& yR) 
+		void add(ffe_t x1, ffe_t y1, ffe_t x2, ffe_t y2, ffe_t& xR, ffe_t& yR)
 		{
 			// special cases involving the additive identity                     
 			if (x1 == 0 && y1 == 0)
@@ -748,7 +748,7 @@ public:
 		Point(const ffe_t& x, const ffe_t& y, EllipticCurve& EllipticCurve)
 			: x_(x),
 			y_(y),
-			ec_(EllipticCurve)
+			ec_(&EllipticCurve)
 		{}
 
 		static Point ONE;
@@ -762,7 +762,7 @@ public:
 		}
 
 		// assignment
-		Point operator=(const Point& rhs) 
+		Point operator=(const Point& rhs)
 		{
 			x_ = rhs.x_;
 			y_ = rhs.y_;
@@ -877,9 +877,9 @@ template <typename A>
 std::ostream& operator <<(std::ostream& os, const EllipticCurve<A>& EllipticCurve)
 {
 	os << "y^2 mod " << EllipticCurve.Prime << " = (x^3 ";
-	
-	std::string s1,s2;
-	if (EllipticCurve.a_.i_< 0)
+
+	std::string s1, s2;
+	if (EllipticCurve.a_.i_ < 0)
 		s1 = "-";
 	else s1 = "+";
 
@@ -926,9 +926,11 @@ class Solution<T> ts(const T& n, const T& p)
 	T ss = 0;
 	T z = 2;
 	T c, r, t, m;
+
 	if (powm(n, (p - 1) / 2, p) != 1) {
 		return makeSolution(T(0), T(0), false);
 	}
+
 	while ((q & 1) == 0) {
 		ss += 1;
 		q >>= 1;
@@ -948,26 +950,27 @@ class Solution<T> ts(const T& n, const T& p)
 	t = powm(n, q, p);
 	m = ss;
 
-	while (true) {
-		T i = 0, zz = t;
-		T b = c, e;
-		if (t == 1) {
-			return makeSolution(r, p - r, true);
-		}
-		while (zz != 1 && i < (m - 1)) {
-			zz = zz * zz % p;
-			i++;
-		}
-		e = m - i - 1;
-		while (e > 0) {
-			b = b * b % p;
-			e--;
-		}
-		r = r * b % p;
-		c = b * b % p;
-		t = t * c % p;
-		m = i;
+	T i = 0, zz = t;
+	T b = c, e;
+
+	if (t == 1) {
+		return makeSolution(r, p - r, true);
 	}
+	
+	while (zz != 1 && i < (m - 1)) {
+		zz = zz * zz % p;
+		i++;
+	}
+	e = m - i - 1;
+	
+	while (e > 0) {
+		b = b * b % p;
+		e--;
+	}
+	r = r * b % p;
+	c = b * b % p;
+	t = t * c % p;
+	m = i;
 }
 
 template<typename T>
@@ -985,8 +988,8 @@ template<typename T, typename P, typename Pr>
 T decompress(const T& PubKey, const P& Prime, const Pr& EllipticCurve)
 {
 	//sqrtmod(pow(x, 3, p) + a * x + b, p)
-	
-	class Solution<P> sol = 
+
+	class Solution<P> sol =
 		ts(powm(PubKey.x().i_, 3, Prime) + (EllipticCurve.a_.i() * PubKey.x().i_) + EllipticCurve.b_.i(), Prime);
 
 	const T pointa(PubKey.x().i_, sol.root1);

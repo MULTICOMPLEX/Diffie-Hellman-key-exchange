@@ -69,7 +69,7 @@ T FiniteFieldElement<T>::Prime = T("0xffffffffffffffffffffffffffffffffffffffffff
 void ecc_driver()
 {  
   typedef EllipticCurve<INT> ec_t;
-  
+
   ec_t myEllipticCurve(-60, 17);
 
   // print out a little info and test some properties
@@ -77,7 +77,7 @@ void ecc_driver()
 
   std::cout << std::endl << std::endl;
 
-  auto G = myEllipticCurve[0];
+  auto G = myEllipticCurve.G1;
 
   mxws_1024 mxws_1024;
 

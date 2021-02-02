@@ -614,6 +614,7 @@ public:
 
 		Template parameter P is the order of the finite field Fp over which this curve is defined
 */
+
 template<typename T>
 class EllipticCurve : public FiniteFieldElement<T>
 {
@@ -751,8 +752,6 @@ public:
 			ec_(&EllipticCurve)
 		{}
 
-		static Point ONE;
-
 		// copy ctor
 		Point(const Point& rhs)
 		{
@@ -834,28 +833,11 @@ public:
 	EllipticCurve(const T& a, const T& b)
 		: a_(a),
 		b_(b)
-	{
-		m_table_.push_back(Point(
-			//0x90c74af33f31d922a23931f358a0354b7bcd5c765cc1fceacc3b3d197e1076f1_cppui,
-			//0xa1c1011c097a6b3ffb4757c5683861ee6bd989645f04cc968ff697b6cf3d0a49_cppui, *this));
-			//0x79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798_cppui,
-			//0x483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8_cppui, *this));
+	{}
 
-		 // 0x7b1b0717aaa275844cb9893ecc4f846d5254ff4d7ea705aa6813f759966a44f6_cppui,
-			//0x7c84eb324d4bfc2b4d3a81f5f900e198167f1a0400c0fc82cf7404c2da2856dd_cppui, *this));
-
-			T("0xa169f51dbe7886b50979ee4568b1d2a5432e23c2459f159b46bed404b79e38b8"),
-			T("0xc28263f9c1f0d94478f908406817638b31786d464ec1bca932c90471b5ead9d3"), *this));
-	}
-
-	// get a point (group element) on the curve 
-	Point operator[](int n)
-	{
-		return m_table_[n];
-	}
-
-	// number of elements in this group
-	size_t Size() const { return m_table_.size(); }
+	const Point G1 = Point(
+		T("0xa169f51dbe7886b50979ee4568b1d2a5432e23c2459f159b46bed404b79e38b8"),
+		T("0xc28263f9c1f0d94478f908406817638b31786d464ec1bca932c90471b5ead9d3"), *this);
 
 	// the parameter a (as an element of Fp)
 	FiniteFieldElement<T> a() const { return a_; }
@@ -866,8 +848,6 @@ public:
 	template <typename A>
 	friend std::ostream& operator <<(std::ostream& os, const EllipticCurve<A>& EllipticCurve);
 
-	typedef std::vector<Point>  m_table_t;
-	m_table_t                   m_table_;   // table of points
 	FiniteFieldElement<T>       a_;         // paramter a of the EC equation
 	FiniteFieldElement<T>       b_;         // parameter b of the EC equation
 
@@ -950,27 +930,30 @@ class Solution<T> ts(const T& n, const T& p)
 	t = powm(n, q, p);
 	m = ss;
 
-	T i = 0, zz = t;
-	T b = c, e;
+	while (true) {
+		T i = 0, zz = t;
+		T b = c, e;
 
-	if (t == 1) {
-		return makeSolution(r, p - r, true);
+		if (t == 1) {
+			return makeSolution(r, p - r, true);
+		}
+
+		while (zz != 1 && i < (m - 1)) {
+			zz = zz * zz % p;
+			i++;
+		}
+		e = m - i - 1;
+
+		while (e > 0) {
+			b = b * b % p;
+			e--;
+		}
+
+		r = r * b % p;
+		c = b * b % p;
+		t = t * c % p;
+		m = i;
 	}
-	
-	while (zz != 1 && i < (m - 1)) {
-		zz = zz * zz % p;
-		i++;
-	}
-	e = m - i - 1;
-	
-	while (e > 0) {
-		b = b * b % p;
-		e--;
-	}
-	r = r * b % p;
-	c = b * b % p;
-	t = t * c % p;
-	m = i;
 }
 
 template<typename T>

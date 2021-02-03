@@ -20,7 +20,8 @@ typedef int1024_t INT;
 
 #include "mxws.hpp"
 
-class mxws_128
+template<typename T>
+class mxws_t
 {
 
 private:
@@ -29,95 +30,11 @@ private:
 
 public:
 
-	uint128_t x, w;
+	unsigned n = std::numeric_limits<T>::digits;
 
-	typedef uint128_t result_type;
+	T x, w;
 
-	void seed()
-	{
-		init();
-		x = 1;
-	}
-
-	mxws_128(const std::seed_seq& seq)
-	{
-		if (seq.size() == 4)
-		{
-			std::vector<uint32_t> seeds(seq.size());
-			seq.param(seeds.begin());
-			for (size_t x = 0; x < 128; x += 32)
-				w |= (uint128_t(seeds[x / 32]) << x);
-			x = 1;
-		}
-
-		else init();
-	}
-
-	mxws_128(const uint128_t& seed)
-	{
-		for (int x = 0; x < 128; x += 32)
-			w |= (uint128_t(r()) << x);
-		x = 1;
-	}
-
-	void init(const uint64_t& seed)
-	{
-		for (int x = 0; x < 128; x += 32)
-			w |= (uint128_t(r()) << x);
-		x = 1;
-	}
-
-	mxws_128()
-	{
-		init();
-	}
-
-	void init()
-	{
-		for (int x = 0; x < 128; x += 32)
-			w |= (uint128_t(r()) << x);
-		x = 1;
-	}
-
-	virtual ~mxws_128() = default;
-
-	uint128_t min() { return std::numeric_limits<uint128_t>::min(); }
-	uint128_t max() { return std::numeric_limits<uint128_t>::max(); }
-
-
-	inline uint128_t operator()()
-	{
-		x *= w;
-		x = (x >> 64) | (x << 64);
-		w += x;
-
-		return x;
-	}
-
-	inline uint128_t operator()(const uint128_t& max)
-	{
-		return (*this)() % (max + 1);
-	}
-
-	inline uint128_t operator()(const uint128_t& min, const uint128_t& max)
-	{
-		return min + ((*this)() % (max - min + 1));
-	}
-
-};
-
-class mxws_256
-{
-
-private:
-
-	std::random_device r;
-
-public:
-
-	uint256_t x, w;
-
-	typedef uint256_t result_type;
+	typedef T result_type;
 
 	void seed()
 	{
@@ -125,241 +42,66 @@ public:
 		x = 1;
 	}
 
-	mxws_256(const std::seed_seq& seq)
-	{
-		if (seq.size() == 8)
+	mxws_t(const std::seed_seq& seq)
+	{	
+		if (seq.size() * 32 == n)
 		{
 			std::vector<uint32_t> seeds(seq.size());
 			seq.param(seeds.begin());
-			for (size_t x = 0; x < 256; x += 32)
-				w |= (uint256_t(seeds[x / 32]) << x);
+			for (unsigned x = 0; x < n; x += 32)
+				w |= (T(seeds[x / 32]) << x);
 			x = 1;
 		}
 
 		else init();
 	}
 
-	mxws_256(const uint256_t& seed)
+	mxws_t(const T& seed)
 	{
-		for (int x = 0; x < 256; x += 32)
-			w |= (uint256_t(r()) << x);
+		for (unsigned x = 0; x < n; x += 32)
+			w |= (T(r()) << x);
 		x = 1;
 	}
 
 	void init(const uint64_t& seed)
 	{
-		for (int x = 0; x < 256; x += 32)
-			w |= (uint256_t(r()) << x);
+		for (unsigned x = 0; x < n; x += 32)
+			w |= (T(r()) << x);
 		x = 1;
 	}
 
-	mxws_256()
+	mxws_t()
 	{
 		init();
 	}
 
 	void init()
 	{
-		for (int x = 0; x < 256; x += 32)
-			w |= (uint256_t(r()) << x);
+		for (unsigned x = 0; x < n; x += 32)
+			w |= (T(r()) << x);
 		x = 1;
 	}
 
-	virtual ~mxws_256() = default;
+	virtual ~mxws_t() = default;
 
-	uint256_t min() { return std::numeric_limits<uint256_t>::min(); }
-	uint256_t max() { return std::numeric_limits<uint256_t>::max(); }
+	T min() { return std::numeric_limits<T>::min(); }
+	T max() { return std::numeric_limits<T>::max(); }
 
-
-	inline uint256_t operator()()
+	inline T operator()()
 	{
 		x *= w;
-		x = (x >> 128) | (x << 128);
+		x = (x >> (n/2)) | (x << (n/2));
 		w += x;
 
 		return x;
 	}
 
-	inline uint256_t operator()(const uint256_t& max)
+	inline T operator()(const T& max)
 	{
 		return (*this)() % (max + 1);
 	}
 
-	inline uint256_t operator()(const uint256_t& min, const uint256_t& max)
-	{
-		return min + ((*this)() % (max - min + 1));
-	}
-
-};
-
-//////////////////////////////////////////
-
-class mxws_512
-{
-
-private:
-
-	std::random_device r;
-
-public:
-
-	uint512_t x, w;
-
-	typedef uint512_t result_type;
-
-	void seed()
-	{
-		init();
-		x = 1;
-	}
-
-	mxws_512(const std::seed_seq& seq)
-	{
-		if (seq.size() == 16)
-		{
-			std::vector<uint32_t> seeds(seq.size());
-			seq.param(seeds.begin());
-			for (size_t x = 0; x < 512; x += 32)
-				w |= (uint512_t(seeds[x / 32]) << x);
-			x = 1;
-		}
-
-		else init();
-	}
-
-	mxws_512(const uint512_t& seed)
-	{
-		for (int x = 0; x < 512; x += 32)
-			w |= (uint512_t(r()) << x);
-		x = 1;
-	}
-
-	void init(const uint64_t& seed)
-	{
-		for (int x = 0; x < 512; x += 32)
-			w |= (uint512_t(r()) << x);
-		x = 1;
-	}
-
-	mxws_512()
-	{
-		init();
-	}
-
-	void init()
-	{
-		for (int x = 0; x < 512; x += 32)
-			w |= (uint512_t(r()) << x);
-		x = 1;
-	}
-
-	virtual ~mxws_512() = default;
-
-	uint512_t min() { return std::numeric_limits<uint512_t>::min(); }
-	uint512_t max() { return std::numeric_limits<uint512_t>::max(); }
-
-
-	inline uint512_t operator()()
-	{
-		x *= w;
-		x = (x >> 256) | (x << 256);
-		w += x;
-
-		return x;
-	}
-
-	inline uint512_t operator()(const uint512_t& max)
-	{
-		return (*this)() % (max + 1);
-	}
-
-	inline uint512_t operator()(const uint512_t& min, const uint512_t& max)
-	{
-		return min + ((*this)() % (max - min + 1));
-	}
-
-};
-
-class mxws_1024
-{
-
-private:
-
-	std::random_device r;
-
-public:
-
-	INT x, w;
-
-	typedef INT result_type;
-
-	void seed()
-	{
-		init();
-		x = 1;
-	}
-
-	mxws_1024(const std::seed_seq& seq)
-	{
-		if (seq.size() == 32)
-		{
-			std::vector<uint32_t> seeds(seq.size());
-			seq.param(seeds.begin());
-			for (size_t x = 0; x < 1024; x += 32)
-				w |= (INT(seeds[x / 32]) << x);
-			x = 1;
-		}
-
-		else init();
-	}
-
-	mxws_1024(const INT& seed)
-	{
-		for (int x = 0; x < 1024; x += 32)
-			w |= (INT(r()) << x);
-		x = 1;
-	}
-
-	void init(const uint64_t& seed)
-	{
-		for (int x = 0; x < 1024; x += 32)
-			w |= (INT(r()) << x);
-		x = 1;
-	}
-
-	mxws_1024()
-	{
-		init();
-	}
-
-	void init()
-	{
-		for (int x = 0; x < 1024; x += 32)
-			w |= (INT(r()) << x);
-		x = 1;
-	}
-
-	virtual ~mxws_1024() = default;
-
-	INT min() { return std::numeric_limits<INT>::min(); }
-	INT max() { return std::numeric_limits<INT>::max(); }
-
-
-	inline INT operator()()
-	{
-		x *= w;
-		x = (x >> 512) | (x << 512);
-		w += x;
-
-		return x;
-	}
-
-	inline INT operator()(const INT& max)
-	{
-		return (*this)() % (max + 1);
-	}
-
-	inline INT operator()(const INT& min, const INT& max)
+	inline T operator()(const T& min, const T& max)
 	{
 		return min + ((*this)() % (max - min + 1));
 	}
@@ -385,34 +127,20 @@ inline uint256_t rand_ui128()
 
 //////////////////////////////////////////
 
-inline uint256_t rand_ui256_prime()
+template<typename T>
+inline T rand_t_prime()
 {
-	static thread_local mxws_256 mxws_256;
-	uint256_t n;
-	while (!miller_rabin_test(n, 1, mxws_256))n = mxws_256();
+	static thread_local mxws_t<T> mxws_t;
+	T n;
+	while (!miller_rabin_test(n, 1, mxws_t))n = mxws_t();
 	return n;
 }
 
-inline uint256_t rand_ui256()
+template<typename T>
+inline T rand_t()
 {
-	static thread_local mxws_256 mxws_256;
-	return mxws_256();
-}
-
-//////////////////////////////////////////
-
-inline uint512_t rand_ui512_prime()
-{
-	static thread_local mxws_512 mxws_512;
-	uint512_t n;
-	while (!miller_rabin_test(n, 1, mxws_512))n = mxws_512();
-	return n;
-}
-
-inline uint512_t rand_ui512()
-{
-	static thread_local mxws_512 mxws_512;
-	return mxws_512();
+	static thread_local mxws_t<T> mxws_t;
+	return mxws_t();
 }
 
 //////////////////////////////////////////
@@ -436,14 +164,14 @@ inline uint512_t Primitive_Root
 )
 {
 	uint512_t r;
-	mxws_512 mxws_512;
+	mxws_t<uint512_t> mxws_t;
 
-	while (!((gcd(r, p) == 1) && isPrime(r)))r = mxws_512();
+	while (!((gcd(r, p) == 1) && isPrime(r)))r = mxws_t();
 
 	return r;
 }
 
-const thread_local uint512_t P = rand_ui512_prime();
+const thread_local uint512_t P = rand_t_prime<uint512_t>();
 const thread_local uint512_t G = Primitive_Root(P);
 
 inline void dh_gen_keypair
@@ -452,7 +180,7 @@ inline void dh_gen_keypair
 	uint512_t& public_key
 )
 {
-	private_key = rand_ui512();
+	private_key = rand_t<uint512_t>();
 	public_key = powm(G, private_key, P);
 }
 

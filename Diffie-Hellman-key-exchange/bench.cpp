@@ -16,16 +16,16 @@ void bench_driver()
     std::cout << std::endl;
 
     start = std::chrono::steady_clock::now();
-    rand_ui512();
+    rand_t<uint512_t>();
     end = std::chrono::steady_clock::now();
     total = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    std::cout << "cost: ns rand_ui512(),       " << std::dec << total << std::endl;
+    std::cout << "cost: ns rand_t(),       " << std::dec << total << std::endl;
     
     start = std::chrono::steady_clock::now();
-    rand_ui512_prime();
+    rand_t_prime<uint512_t>();
     end = std::chrono::steady_clock::now();
     total = chrono::duration_cast<chrono::microseconds>(end - start).count();
-    std::cout << "cost: us rand_ui512_prime(), " << total << std::endl;
+    std::cout << "cost: us rand_t_prime(), " << total << std::endl;
 }
 
 std::pair<uint512_t, uint512_t> bench(unsigned int times)

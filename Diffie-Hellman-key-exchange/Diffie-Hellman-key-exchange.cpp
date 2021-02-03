@@ -79,11 +79,11 @@ void ecc_driver()
 
   auto G = myEllipticCurve.G1;
 
-  mxws_1024 mxws_1024;
+  mxws_t<INT> mxws_t;
 
-  INT alicePrivKey = mxws_1024(myEllipticCurve.Prime);
+  INT alicePrivKey = mxws_t(myEllipticCurve.Prime);
 
-  INT bobPrivKey  = mxws_1024(myEllipticCurve.Prime);
+  INT bobPrivKey  = mxws_t(myEllipticCurve.Prime);
 
   auto start = std::chrono::steady_clock::now();
   
@@ -98,11 +98,13 @@ void ecc_driver()
   auto bobPubKey   = bobPrivKey * G;
   auto bobPubKeyCompressed = compress(bobPubKey);
   
+  std::cout << "alicePrivKey             : \n" << std::hex << alicePrivKey << std::endl;
   std::cout << "alicePubKey              : \n" << std::hex << alicePubKey << std::endl;
   std::cout << "Compressed alicePubKey   : \n" << alicePubKeyCompressed << std::endl;
   std::cout << "Decompressed alicePubKey : \n";
   std::cout << decompress(alicePubKeyCompressed, myEllipticCurve.Prime, myEllipticCurve) << std::endl << std::endl;
   
+  std::cout << "bobPrivKey               : \n" << std::hex << bobPrivKey << std::endl;
   std::cout << "bobPubKey                : \n" << bobPubKey << std::endl;
   std::cout << "Compressed bobPubKey     : \n" << bobPubKeyCompressed << std::endl;
   std::cout << "Decompressed bobPubKey   : \n";
@@ -124,7 +126,7 @@ void ecc_driver()
 
 template <typename T>
 void test(T n, T p) {
-  struct Solution<T> sol = ts(n, p);
+  struct Solution sol = ts(n, p);
   printf("n = %llu\n", n);
   printf("p = %llu\n", p);
   if (sol.exists) {

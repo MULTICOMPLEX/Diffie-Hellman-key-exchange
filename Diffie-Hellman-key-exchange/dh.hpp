@@ -646,7 +646,7 @@ class Solution<T> ts(const T& n, const T& p)
 
 	if (ss == 1) {
 		T r1 = powm(n, (p + 1) / 4, p);
-		return makeSolution(r1, p - r1, true);
+		return makeSolution<T>(r1, p - r1, true);
 	}
 
 	while (powm(z, (p - 1) / 2, p) != p - 1) {
@@ -663,7 +663,7 @@ class Solution<T> ts(const T& n, const T& p)
 		T b = c, e;
 
 		if (t == 1) {
-			return makeSolution(r, p - r, true);
+			return makeSolution<T>(r, p - r, true);
 		}
 
 		while (zz != 1 && i < (m - 1)) {

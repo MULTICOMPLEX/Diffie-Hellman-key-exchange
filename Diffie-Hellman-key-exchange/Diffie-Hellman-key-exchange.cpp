@@ -126,7 +126,7 @@ void ecc_driver()
 
 template <typename T>
 void test(T n, T p) {
-  struct Solution sol = ts(n, p);
+  struct Solution<T> sol = ts(n, p);
   printf("n = %llu\n", n);
   printf("p = %llu\n", p);
   if (sol.exists) {

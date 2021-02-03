@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
     uint512_t alice_private, alice_public;
     dh_gen_keypair(alice_private, alice_public);
 
-    uint512_t bob_private, bob_public;
+    uint512_t bob_private, bob_public; 
     dh_gen_keypair(bob_private, bob_public);
 
     uint512_t alice_secret = dh_gen_secret(alice_private, bob_public);

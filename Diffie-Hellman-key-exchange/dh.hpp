@@ -116,15 +116,6 @@ inline uint64_t rand_uint64()
 	return mxws_64();
 }
 
-inline uint256_t rand_ui128()
-{
-	static thread_local mxws_64 mxws_64;
-
-	uint256_t a = mxws_64();
-	uint256_t b = mxws_64();
-	return (a << 64) | b;
-}
-
 //////////////////////////////////////////
 
 template<typename T>

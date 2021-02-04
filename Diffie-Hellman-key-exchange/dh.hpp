@@ -30,10 +30,11 @@ private:
 
 public:
 
-	unsigned n = std::numeric_limits<T>::digits;
+	static const unsigned n = std::numeric_limits<T>::digits * 2;
+	typedef number<cpp_int_backend<n * 2, n * 2, unsigned_magnitude, unchecked, void> > uint;
 
-	T x, w;
-
+	uint x, w;
+	
 	typedef T result_type;
 
 	void seed()
@@ -49,24 +50,24 @@ public:
 			std::vector<uint32_t> seeds(seq.size());
 			seq.param(seeds.begin());
 			for (unsigned x = 0; x < n; x += 32)
-				w |= (T(seeds[x / 32]) << x);
+				w |= (uint(seeds[x / 32]) << x);
 			x = 1;
 		}
 
 		else init();
 	}
 
-	mxws_t(const T& seed)
+	mxws_t(const uint& seed)
 	{
 		for (unsigned x = 0; x < n; x += 32)
-			w |= (T(r()) << x);
+			w |= (uint(r()) << x);
 		x = 1;
 	}
 
 	void init(const uint64_t& seed)
 	{
 		for (unsigned x = 0; x < n; x += 32)
-			w |= (T(r()) << x);
+			w |= (uint(r()) << x);
 		x = 1;
 	}
 
@@ -78,7 +79,7 @@ public:
 	void init()
 	{
 		for (unsigned x = 0; x < n; x += 32)
-			w |= (T(r()) << x);
+			w |= (uint(r()) << x);
 		x = 1;
 	}
 
@@ -93,7 +94,7 @@ public:
 		x = (x >> (n/2)) | (x << (n/2));
 		w += x;
 
-		return x;
+		return T(x);
 	}
 
 	inline T operator()(const T& max)
@@ -121,6 +122,7 @@ inline uint64_t rand_uint64()
 template<typename T>
 inline T rand_t_prime()
 {
+
 	static thread_local mxws_t<T> mxws_t;
 	T n;
 	while (!miller_rabin_test(n, 1, mxws_t))n = mxws_t();
@@ -128,7 +130,7 @@ inline T rand_t_prime()
 }
 
 template<typename T>
-inline T rand_t()
+inline auto rand_t()
 {
 	static thread_local mxws_t<T> mxws_t;
 	return mxws_t();
@@ -136,28 +138,32 @@ inline T rand_t()
 
 //////////////////////////////////////////
 
+template<typename T>
 inline bool isPrime
 (
-	const uint512_t& n
+	const T& n
 )
 {
-	static thread_local mxws mxws;
 
-	if (!miller_rabin_test(n, 10, mxws))
+	static thread_local mxws_t<T> mxws_t;
+
+	if (!miller_rabin_test(n, 10, mxws_t))
 		return false;
 
 	return true;
 }
 
-inline uint512_t Primitive_Root
+template<typename T>
+inline auto Primitive_Root
 (
-	const uint512_t& p
+	const T& p
 )
 {
-	uint512_t r;
-	mxws_t<uint512_t> mxws_t;
+	T r;
+	
+	mxws_t<T> mxws_t;
 
-	while (!((gcd(r, p) == 1) && isPrime(r)))r = mxws_t();
+	while (!((gcd(r, p) == 1) && isPrime<T>(r)))r = mxws_t();
 
 	return r;
 }
@@ -165,20 +171,22 @@ inline uint512_t Primitive_Root
 const thread_local uint512_t P = rand_t_prime<uint512_t>();
 const thread_local uint512_t G = Primitive_Root(P);
 
+template<typename T>
 inline void dh_gen_keypair
 (
-	uint512_t& private_key,
-	uint512_t& public_key
+	T& private_key,
+	T& public_key
 )
 {
-	private_key = rand_t<uint512_t>();
+	private_key = rand_t<T>();
 	public_key = powm(G, private_key, P);
 }
 
-inline uint512_t dh_gen_secret
+template<typename T>
+inline T dh_gen_secret
 (
-	const uint512_t my_private_key,
-	const uint512_t another_public_key
+	T my_private_key,
+	T another_public_key
 )
 {
 	return powm(another_public_key, my_private_key, P);

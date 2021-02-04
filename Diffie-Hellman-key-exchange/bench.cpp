@@ -11,15 +11,18 @@ void bench_driver()
     bench(times);
     auto end = std::chrono::steady_clock::now();
     auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-    std::cout << "cost: us per trial,          " << (double)total / (double)times << std::endl;
+    std::cout << "cost: us per trial,      " << (double)total / (double)times << std::endl;
 
     std::cout << std::endl;
-
+    
     start = std::chrono::steady_clock::now();
-    rand_t<uint512_t>();
+    for (unsigned int i = 0; i < times; ++i)
+      rand_t<uint512_t>();
+      //rand_uint64();
+     
     end = std::chrono::steady_clock::now();
     total = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-    std::cout << "cost: ns rand_t(),       " << std::dec << total << std::endl;
+    std::cout << "cost: ns rand_t(),       " << std::dec << (double)total / (double)times << std::endl;
     
     start = std::chrono::steady_clock::now();
     rand_t_prime<uint512_t>();

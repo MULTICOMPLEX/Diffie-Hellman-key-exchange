@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bench.cpp">
+    <ClCompile Include="Diffie-Hellman-key-exchange.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Diffie-Hellman-key-exchange.cpp">
+    <ClCompile Include="bench.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

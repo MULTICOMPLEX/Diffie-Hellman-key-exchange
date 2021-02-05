@@ -130,7 +130,7 @@ inline T rand_t_prime()
 }
 
 template<typename T>
-inline auto rand_t()
+inline T rand_t()
 {
 	static thread_local mxws_t<T> mxws_t;
 	return mxws_t();
@@ -154,7 +154,7 @@ inline bool isPrime
 }
 
 template<typename T>
-inline auto Primitive_Root
+inline T Primitive_Root
 (
 	const T& p
 )

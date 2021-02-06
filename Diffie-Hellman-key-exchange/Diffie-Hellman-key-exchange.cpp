@@ -138,3 +138,11 @@ void test(T n, T p) {
   }
   printf("\n");
 }
+
+template <typename T>
+void print_array(T* sbox)
+{
+for (int i = 0; i < sizeof(sbox); i++) {
+  if (((i + 1) % 16) == 1)std::cout << std::endl;
+  std::cout << std::setfill('0') << std::setw(2) << std::hex << int(sbox[i]) << " ";
+}}

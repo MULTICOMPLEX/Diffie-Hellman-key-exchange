@@ -1,5 +1,10 @@
 
-#include <cstdio>
+
+#include <boost/multiprecision/miller_rabin.hpp>
+#include <boost/integer/mod_inverse.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
+//#include <boost/lexical_cast.hpp>
+
 #include <chrono>
 #include <iostream>
 #include <iomanip>
@@ -9,17 +14,13 @@
 #include <tuple>
 #include <set>
 
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/miller_rabin.hpp>
-#include <boost/integer/mod_inverse.hpp>
-#include <boost/lexical_cast.hpp>
+
 using namespace boost::multiprecision;
 using namespace boost::multiprecision::literals;
 
 typedef int1024_t INT;
 
 #include "mxws.hpp"
-
 
 template<typename T>
 class mxws_t
@@ -127,7 +128,7 @@ public:
 
 	uint x, w;
 
-	typedef _ExtInt(T) result_type;
+	typedef unsigned _ExtInt(T) result_type;
 
 	void seed()
 	{

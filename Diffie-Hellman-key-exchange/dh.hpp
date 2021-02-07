@@ -204,11 +204,11 @@ public:
 template <unsigned T>
 std::ostream& operator <<(std::ostream& os, const unsigned _ExtInt(T)& ExtInt)
 {
-	for (unsigned i = 0; i <= T; i += 4) {
-		int b = int(ExtInt >> (T - i)) & 0xf;
-		os << std::hex << b;
+	os << std::hex;
+	for (unsigned i = 0; i < T; i += 4) {
+		int b = int(ExtInt >> (T - i-4)) & 0xf;
+		os << b;
 	}
-	os << std::dec;
 	return os;
 }
 

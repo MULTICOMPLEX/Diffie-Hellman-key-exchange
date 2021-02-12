@@ -3,6 +3,7 @@
 
 std::pair<uint512_t, uint512_t> bench(unsigned int times);
 
+
 void bench_driver()
 {
 	using namespace std;
